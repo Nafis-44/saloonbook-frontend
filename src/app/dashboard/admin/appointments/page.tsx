@@ -62,13 +62,27 @@ export default function AdminAppointmentsPage() {
             setIsLoading(true);
             setError("");
 
-            const response = await fetch(`${API_URL}/appointments`);
+            // Get Authentication Token
+            const { data: tokenData, error } = await authClient.token();
 
-            if (!response.ok) {
-                throw new Error("Failed to load appointments.");
+            if (error || !tokenData?.token) {
+                throw new Error("Failed to get authentication token.");
             }
 
+            // Fetch Appointments
+            const response = await fetch(`${API_URL}/appointments`, {
+                headers: {
+                    authorization: `Bearer ${tokenData.token}`,
+                },
+            });
+
             const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message || "Failed to load appointments."
+                );
+            }
 
             setAppointments(data);
         } catch (error) {
@@ -89,69 +103,69 @@ export default function AdminAppointmentsPage() {
     }, []);
 
     // Update Appointment Status
-const handleStatusUpdate = async (
-    appointmentId: string,
-    status: "confirmed" | "cancelled"
-) => {
-    const action = status === "confirmed" ? "confirm" : "cancel";
+    const handleStatusUpdate = async (
+        appointmentId: string,
+        status: "confirmed" | "cancelled"
+    ) => {
+        const action = status === "confirmed" ? "confirm" : "cancel";
 
-    if (!window.confirm(`Are you sure you want to ${action} this appointment?`)) {
-        return;
-    }
-
-    try {
-        setIsUpdating(appointmentId);
-
-        // Get Authentication Token
-        const { data: tokenData, error } = await authClient.token();
-
-        if (error || !tokenData?.token) {
-            throw new Error("Failed to get authentication token.");
+        if (!window.confirm(`Are you sure you want to ${action} this appointment?`)) {
+            return;
         }
 
-        // Send Status Update Request
-        const response = await fetch(
-            `${API_URL}/appointments/${appointmentId}/status`,
-            {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    authorization: `Bearer ${tokenData.token}`,
-                },
-                body: JSON.stringify({ status }),
+        try {
+            setIsUpdating(appointmentId);
+
+            // Get Authentication Token
+            const { data: tokenData, error } = await authClient.token();
+
+            if (error || !tokenData?.token) {
+                throw new Error("Failed to get authentication token.");
             }
-        );
 
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(
-                data.message || "Failed to update appointment."
+            // Send Status Update Request
+            const response = await fetch(
+                `${API_URL}/appointments/${appointmentId}/status`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        authorization: `Bearer ${tokenData.token}`,
+                    },
+                    body: JSON.stringify({ status }),
+                }
             );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message || "Failed to update appointment."
+                );
+            }
+
+            setAppointments((previousAppointments) =>
+                previousAppointments.map((appointment) =>
+                    appointment._id === appointmentId
+                        ? { ...appointment, status }
+                        : appointment
+                )
+            );
+
+            toast.success(data.message || "Appointment updated successfully!");
+
+        } catch (error) {
+            console.error("Update Appointment Error:", error);
+
+            toast.error(
+                error instanceof Error
+                    ? error.message
+                    : "Something went wrong."
+            );
+        } finally {
+            setIsUpdating(null);
         }
-
-        setAppointments((previousAppointments) =>
-            previousAppointments.map((appointment) =>
-                appointment._id === appointmentId
-                    ? { ...appointment, status }
-                    : appointment
-            )
-        );
-
-        toast.success(data.message || "Appointment updated successfully!");
-
-    } catch (error) {
-        console.error("Update Appointment Error:", error);
-
-        toast.error(
-            error instanceof Error
-                ? error.message
-                : "Something went wrong."
-        );
-    } finally {
-        setIsUpdating(null);
-    }
-};
+    };
 
     // Format Appointment Date
     const formatDate = (date: string) => {
@@ -446,11 +460,10 @@ const handleStatusUpdate = async (
                                                         <p className="text-xs text-gray-400">
                                                             Payment Status
                                                         </p>
-                                                        <p className={`text-sm font-semibold capitalize ${
-                                                            appointment.paymentStatus === "paid"
+                                                        <p className={`text-sm font-semibold capitalize ${appointment.paymentStatus === "paid"
                                                                 ? "text-green-600"
                                                                 : "text-orange-600"
-                                                        }`}>
+                                                            }`}>
                                                             {appointment.paymentStatus}
                                                         </p>
                                                     </div>
