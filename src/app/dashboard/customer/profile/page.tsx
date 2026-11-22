@@ -13,6 +13,7 @@ import {
     ArrowLeft,
     CalendarDays,
 } from "lucide-react";
+import Image from "next/image";
 
 async function CustomerProfileContent() {
     const session = await auth.api.getSession({
@@ -65,10 +66,12 @@ async function CustomerProfileContent() {
 
                         <div className="mx-auto flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-white/40 bg-white text-[#8c5968]">
                             {user.image ? (
-                                <img
+                                <Image
                                     src={user.image}
                                     alt={user.name || "Customer"}
                                     className="h-full w-full object-cover"
+                                    width={300}
+                                    height={300}
                                 />
                             ) : (
                                 <UserRound size={45} />
