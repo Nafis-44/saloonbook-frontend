@@ -62,7 +62,7 @@ const Navbar = () => {
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Services", href: "/services" },
-    { name: "Why SalonBook", href: "/why-salonbook" },
+    { name: "Why Choose Us", href: "/why-salonbook" },
     { name: "Visit Us", href: "/visit-us" },
   ];
 
