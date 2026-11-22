@@ -11,8 +11,8 @@ export async function proxy(request: NextRequest) {
     });
 
     const user = session?.user;
-    console.log("Session User:", user);
-    console.log("Logged In User Role:", user?.role);
+    // console.log("Session User:", user);
+    // console.log("Logged In User Role:", user?.role);
 
     // User is not logged in
     if (!user) {

@@ -1,10 +1,11 @@
 
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-export default function PaymentCancelPage() {
+function PaymentCancelContent() {
     const searchParams = useSearchParams();
     const appointmentId = searchParams.get("appointmentId");
 
@@ -39,5 +40,19 @@ export default function PaymentCancelPage() {
                 </Link>
             </div>
         </main>
+    );
+}
+
+export default function PaymentCancelPage() {
+    return (
+        <Suspense
+            fallback={
+                <div className="flex min-h-screen items-center justify-center">
+                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-black"></div>
+                </div>
+            }
+        >
+            <PaymentCancelContent />
+        </Suspense>
     );
 }

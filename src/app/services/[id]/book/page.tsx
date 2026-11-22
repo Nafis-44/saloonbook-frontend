@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
@@ -50,7 +50,7 @@ const getTodayDate = () => {
     return `${year}-${month}-${day}`;
 };
 
-const BookingPage = () => {
+function BookingContent() {
     const params = useParams();
 
     const serviceId = params.id as string;
@@ -137,19 +137,16 @@ const BookingPage = () => {
         setFormError("");
         setSuccessMessage("");
 
-        // Check Session Loading
         if (isSessionPending) {
             setFormError("Please wait while we verify your account.");
             return;
         }
 
-        // Check Logged-in User
         if (!session?.user?.id) {
             setFormError("Please sign in before booking an appointment.");
             return;
         }
 
-        // Prevent Admin Booking
         if (session.user.role === "admin") {
             setFormError("Admin accounts cannot book customer appointments.");
             return;
@@ -176,7 +173,6 @@ const BookingPage = () => {
 
             const token = data?.token;
 
-            // Get Customer ID from Better Auth Session
             const customerId = session.user.id;
 
             const response = await fetch(`${API_URL}/appointments`, {
@@ -228,7 +224,6 @@ const BookingPage = () => {
     return (
         <main className="min-h-screen bg-[#fffaf7]">
 
-            {/* Loading */}
             {isLoading && (
                 <div className="flex min-h-[70vh] flex-col items-center justify-center gap-4">
                     <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#eaded9] border-t-[#542d38]" />
@@ -239,7 +234,6 @@ const BookingPage = () => {
                 </div>
             )}
 
-            {/* Error */}
             {!isLoading && error && (
                 <div className="flex min-h-[70vh] flex-col items-center justify-center px-5 text-center">
 
@@ -264,7 +258,6 @@ const BookingPage = () => {
                 </div>
             )}
 
-            {/* Booking Form */}
             {!isLoading && !error && service && (
                 <section className="mx-auto max-w-[1100px] px-5 py-12 sm:px-8 sm:py-16 lg:px-10">
 
@@ -278,7 +271,6 @@ const BookingPage = () => {
 
                     <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
 
-                        {/* Form */}
                         <div className="rounded-3xl border border-[#eee5e0] bg-white p-6 shadow-sm sm:p-9">
 
                             <div>
@@ -300,7 +292,6 @@ const BookingPage = () => {
                                 className="mt-9 space-y-7"
                             >
 
-                                {/* Appointment Date */}
                                 <div>
                                     <label
                                         htmlFor="appointmentDate"
@@ -329,7 +320,6 @@ const BookingPage = () => {
                                     </p>
                                 </div>
 
-                                {/* Time Slot */}
                                 <div>
                                     <label className="mb-3 flex items-center gap-2 text-sm font-bold text-[#542d38]">
                                         <Clock size={18} />
@@ -357,7 +347,6 @@ const BookingPage = () => {
                                     </div>
                                 </div>
 
-                                {/* Optional Message */}
                                 <div>
                                     <label
                                         htmlFor="message"
@@ -388,7 +377,6 @@ const BookingPage = () => {
                                     </p>
                                 </div>
 
-                                {/* Form Error */}
                                 {formError && (
                                     <div className="flex items-center gap-2 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
                                         <AlertCircle size={17} />
@@ -396,7 +384,6 @@ const BookingPage = () => {
                                     </div>
                                 )}
 
-                                {/* Success Message */}
                                 {successMessage && (
                                     <div className="rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-green-700">
                                         <div className="flex items-center gap-2 font-bold">
@@ -414,7 +401,6 @@ const BookingPage = () => {
                                     </div>
                                 )}
 
-                                {/* Submit Button */}
                                 <button
                                     type="submit"
                                     disabled={isSubmitting || isSessionPending}
@@ -432,7 +418,6 @@ const BookingPage = () => {
                             </form>
                         </div>
 
-                        {/* Service Summary */}
                         <aside className="h-fit rounded-3xl border border-[#eee5e0] bg-white p-6 shadow-sm sm:p-7">
 
                             <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#a4777d]">
@@ -490,6 +475,18 @@ const BookingPage = () => {
             )}
         </main>
     );
-};
+}
 
-export default BookingPage;
+export default function BookingPage() {
+    return (
+        <Suspense
+            fallback={
+                <div className="flex min-h-screen items-center justify-center bg-[#fffaf7]">
+                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#eaded9] border-t-[#542d38]" />
+                </div>
+            }
+        >
+            <BookingContent />
+        </Suspense>
+    );
+}

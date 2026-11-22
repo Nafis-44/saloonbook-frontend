@@ -1,4 +1,5 @@
 
+import { Suspense } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -13,7 +14,7 @@ import {
     CalendarDays,
 } from "lucide-react";
 
-const CustomerProfilePage = async () => {
+async function CustomerProfileContent() {
     const session = await auth.api.getSession({
         headers: await headers(),
     });
@@ -173,7 +174,10 @@ const CustomerProfilePage = async () => {
                         {/* Account Status */}
                         <div className="mt-6 rounded-xl bg-[#f8f1f2] p-5">
                             <div className="flex items-center gap-3">
-                                <ShieldCheck className="text-[#8c5968]" size={22} />
+                                <ShieldCheck
+                                    className="text-[#8c5968]"
+                                    size={22}
+                                />
 
                                 <div>
                                     <p className="font-semibold text-[#542d38]">
@@ -192,6 +196,18 @@ const CustomerProfilePage = async () => {
             </div>
         </main>
     );
-};
+}
 
-export default CustomerProfilePage;
+export default function CustomerProfilePage() {
+    return (
+        <Suspense
+            fallback={
+                <div className="flex min-h-[300px] items-center justify-center">
+                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#eaded9] border-t-[#542d38]" />
+                </div>
+            }
+        >
+            <CustomerProfileContent />
+        </Suspense>
+    );
+}

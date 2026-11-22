@@ -1,5 +1,8 @@
+
+import { Suspense } from "react";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+
 type PaymentVerificationResponse = {
     success: boolean;
     pending?: boolean;
@@ -17,7 +20,7 @@ type PaymentVerificationResponse = {
     };
 };
 
-export default async function PaymentSuccessPage({
+async function PaymentSuccessContent({
     searchParams,
 }: {
     searchParams: Promise<{ session_id?: string }>;
@@ -178,5 +181,23 @@ export default async function PaymentSuccessPage({
                 </a>
             </div>
         </main>
+    );
+}
+
+export default function PaymentSuccessPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ session_id?: string }>;
+}) {
+    return (
+        <Suspense
+            fallback={
+                <div className="flex min-h-screen items-center justify-center">
+                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-black"></div>
+                </div>
+            }
+        >
+            <PaymentSuccessContent searchParams={searchParams} />
+        </Suspense>
     );
 }
