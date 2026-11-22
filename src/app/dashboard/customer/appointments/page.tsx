@@ -139,18 +139,13 @@ export default function MyAppointmentsPage() {
             const { data } = await authClient.token();
 
             const token = data?.token;
-
             const response = await fetch(
                 `${API_URL}/customer/appointments/${appointmentId}/cancel`,
                 {
                     method: "PATCH",
                     headers: {
-                        "Content-Type": "application/json",
                         authorization: `Bearer ${token}`,
                     },
-                    body: JSON.stringify({
-                        customerId: session.user.id,
-                    }),
                 }
             );
 
