@@ -202,7 +202,7 @@ export default function MyAppointmentsPage() {
                     },
                     body: JSON.stringify({
                         appointmentId,
-                        customerId: session.user.id,
+                        
                     }),
                 }
             );

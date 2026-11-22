@@ -88,20 +88,35 @@ const CustomerDashboard = async () => {
         appointments: [],
     };
 
+
     try {
+        const tokenData = await auth.api.getToken({
+            headers: await headers(),
+        });
+
         const response = await fetch(
             `${API_URL}/customer/appointments/${session.user.id}`,
             {
                 cache: "no-store",
+                headers: {
+                    authorization: `Bearer ${tokenData.token}`,
+                },
             }
         );
 
         if (response.ok) {
             dashboardData = await response.json();
+        } else {
+            console.error(
+                "Customer Dashboard API Error:",
+                response.status,
+                await response.text()
+            );
         }
     } catch (error) {
         console.error("Customer Dashboard Error:", error);
     }
+
 
     const stats = [
         {
