@@ -56,8 +56,7 @@ const Navbar = () => {
   // Logged-in user role
   const userRole = user?.role;
 
-  // Check User Role in Browser Console
-  // console.log("Logged In User Role:", userRole);
+  
 
   const navLinks = [
     { name: "Home", href: "/" },
