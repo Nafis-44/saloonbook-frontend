@@ -74,7 +74,17 @@ const ServicesPage = () => {
     };
 
     useEffect(() => {
-        fetchServices();
+    fetchServices();
+}, []);
+
+    // Read Category from URL
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const category = params.get("category");
+
+        if (category) {
+            setSelectedCategory(category);
+        }
     }, []);
 
     // Get Unique Categories
