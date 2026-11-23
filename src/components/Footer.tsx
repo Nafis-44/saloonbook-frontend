@@ -14,7 +14,7 @@ const Footer = () => {
     <footer className="bg-[#3d222c] text-[#f8eee9]">
 
       {/* Main Footer */}
-      <div className="mx-auto grid max-w-[1440px] gap-12 px-6 py-16 md:grid-cols-2 md:px-10 lg:grid-cols-4 lg:px-16 lg:py-20">
+      <div className="mx-auto grid max-w-[1440px] gap-10 px-6 py-16 md:grid-cols-2 md:px-10 lg:grid-cols-4 lg:px-16 lg:py-20">
 
         {/* Brand */}
         <div>
